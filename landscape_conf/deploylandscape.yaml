@@ -1,0 +1,27 @@
+- hosts: ubuntu_landscape
+  become: true
+  become_user: root
+  tasks:
+          - name: Update cache and install landscape client
+            apt:
+                    name: landscape-client
+                    update_cache: yes 
+          - name: copy over client config file
+            template:
+                    src: ./client.conf.j2
+                    dest: /etc/landscape/client.conf
+                    owner: landscape
+                    group: root
+                    mode: '0600'
+          - name: copy over server.pem file
+            copy:
+                    src: ./server.pem
+                    dest: /etc/landscape
+                    owner: root
+                    group: root
+                    mode: '0644'
+          - name: start and enable landscape-client service
+            service:
+                    name: landscape-client
+                    enabled: yes
+                    state: started

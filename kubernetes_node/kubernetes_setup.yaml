@@ -1,0 +1,51 @@
+- hosts: ubuntu_kube_node
+  become: true
+  become_user: root
+  tasks:
+          - name: Update apt repo and cache
+            apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+          - name: install kubernetes dependancies
+            apt:
+              pkg:
+              - docker.io
+              - curl
+          - name: Add user Nadim to docker group
+            user:
+              name: nadim
+              group: nadim
+              groups: docker
+              append: yes
+          - name: Enable and start the docker service
+            systemd:
+                    name: docker
+                    state: started
+                    enabled: yes
+          - name: Add the kubernetes gpg key for apt
+            apt_key:
+              url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+              state: present
+          - name: Add the kubernetes repo
+            apt_repository:
+              repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+              state: present
+              filename: kubernetes.list
+          - name: Install kubernetes
+            apt:
+              update_cache: yes
+              pkg:
+              - kubeadm
+              - kubelet
+              - kubectl
+              - kubernetes-cni
+          - name: Disable swap
+            command: swapoff -a
+            become: true
+          - name: Disable swap permanently
+            replace:
+              path: /etc/fstab
+              regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+              replace: '#\1\2\3swap\4'
+              backup: yes
+          - name: adding kubernetes node to master
+            command: kubeadm join corneliouskubemaster:6443 --token ddf3mu.89d308ucae7sefq1 --discovery-token-ca-cert-hash sha256:1d3e57626d351926cdbde8515a5264c70ee30d1ddf238c8f90fb62f959e1edf0 
+

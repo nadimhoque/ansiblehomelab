@@ -1,0 +1,13 @@
+[client]
+log_level = info
+url = https://corneliouslandscape/message-system
+ping_url = http://corneliouslandscape/ping
+data_path = /var/lib/landscape/client
+computer_title = {{ ansible_hostname }}
+account_name = standalone
+registration_key = corneliouslandscap3
+script_users = nadim
+include_manager_plugins =
+access_group = containerserver
+tags = new_server
+ssl_public_key = /etc/landscape/server.pem
