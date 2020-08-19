@@ -1,0 +1,12 @@
+- hosts: ubuntu_test
+  become: true
+  tasks:
+        - name: Install vim, htop, screen (why not)
+          apt:
+                pkg:
+                        - vim
+                        - htop
+                        - screen
+                        - emacs
+                update_cache: yes
+
