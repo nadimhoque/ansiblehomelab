@@ -7,17 +7,17 @@
           - name: install kubernetes dependancies
             apt:
               pkg:
-              - docker.io
+              - containerd
               - curl
-          - name: Add user Nadim to docker group
+          - name: Add user Nadim to containerd group
             user:
               name: nadim
               group: nadim
-              groups: docker
+              groups: containerd
               append: yes
-          - name: Enable and start the docker service
+          - name: Enable and start the containerd service
             systemd:
-                    name: docker
+                    name: containerd
                     state: started
                     enabled: yes
           - name: Add the kubernetes gpg key for apt
