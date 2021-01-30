@@ -9,6 +9,10 @@
               pkg:
               - containerd
               - curl
+          - name: Verify/add containerd group
+            ansible.builtin.group:
+              name: containerd
+              state: present
           - name: Add user Nadim to containerd group
             user:
               name: nadim
