@@ -17,7 +17,7 @@
               append: yes
           - name: Enable and start the docker service
             systemd:
-                    name: docker
+                    name: containerd
                     state: started
                     enabled: yes
           - name: Add the kubernetes gpg key for apt
