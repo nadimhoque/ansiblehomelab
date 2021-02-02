@@ -7,15 +7,19 @@
           - name: install kubernetes dependancies
             apt:
               pkg:
-              - docker.io
+              - containerd
               - curl
-          - name: Add user Nadim to docker group
+          - name: Verify/add containerd group
+            ansible.builtin.group:
+               name: containerd
+               state: present
+          - name: Add user Nadim to containerd group
             user:
               name: nadim
               group: nadim
-              groups: docker
+              groups: containerd
               append: yes
-          - name: Enable and start the docker service
+          - name: Enable and start the containerd service
             systemd:
                     name: containerd
                     state: started
@@ -40,12 +44,35 @@
           - name: Disable swap
             command: swapoff -a
             become: true
+          - name: Copy over Modules
+            copy:
+              src: ./config_files/k8s_module.conf
+              dest: /etc/modules-load.d/k8s.conf
+              owner: root
+              group: root
+              mode: 0644
+          - name: Copy over Systcl
+            copy:
+              src: ./config_files/k8s_sysctl.conf
+              dest: /etc/sysctl.d/k8s.conf
+              owner: root
+              group: root
+              mode: 0644
+          - name: set net.ipv4.ip_forward to 1
+            ansible.posix.sysctl:
+              name: net.ipv4.ip_forward
+              value: '1'
+              sysctl_set: yes
           - name: Disable swap permanently
             replace:
               path: /etc/fstab
               regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
               replace: '#\1\2\3swap\4'
               backup: yes
+          - name: Load the br_netfilter module
+            community.general.modprobe:
+               name: br_netfilter
+               state: present
           - name: adding kubernetes node to master
-            command: kubeadm join corneliouskubemaster:6443 --token ddf3mu.89d308ucae7sefq1 --discovery-token-ca-cert-hash sha256:1d3e57626d351926cdbde8515a5264c70ee30d1ddf238c8f90fb62f959e1edf0 
+            command: kubeadm join 192.168.0.32:6443 --token y9eqtb.dd0zjob4rdtc86p3 --discovery-token-ca-cert-hash sha256:6878acf2fa0a41481c30cbe4293bda624696b6e3e0c245cbe6e43226dfc41f32 
 

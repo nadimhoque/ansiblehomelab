@@ -64,4 +64,13 @@
               owner: root
               group: root
               mode: 0644
+          - name: set net.ipv4.ip_forward to 1
+            ansible.posix.sysctl:
+               name: net.ipv4.ip_forward
+               value: '1'
+               sysctl_set: yes
+          - name: Load the br_netfilter module
+            community.general.modprobe:
+               name: br_netfilter
+               state: present
 
