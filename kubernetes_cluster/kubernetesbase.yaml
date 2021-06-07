@@ -4,12 +4,17 @@
   tasks:
     - name: Update apt repo and cache
       apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
-    
+
     - name: Install and setup containerd
       apt:
         pkg:
           - containerd
           - curl
+
+    - name: Verify/add containerd group
+      ansible.builtin.group:
+        name: containerd
+        state: present
     
     - name: Add user nadim to containerd group
       user:
@@ -27,7 +32,7 @@
     - name: Add the kubernetes gpg key for apt
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-         state: present
+        state: present
 
     - name: Add the kubernetes repo
       apt_repository:
